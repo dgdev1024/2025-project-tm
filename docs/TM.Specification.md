@@ -247,6 +247,8 @@ flag is set, in order to execute. The execution conditions which can be used are
 | `0x63XY`  | `SET X, [Y]`  | `-001----`    | Sets bit `X` of value pointed to by register `Y`.                                     |
 | `0x64XY`  | `RES X, Y`    | `--------`    | Clears bit `X` of register `Y`.                                                       |
 | `0x65XY`  | `RES X, [Y]`  | `--------`    | Clears bit `X` of value pointed to by register `Y`.                                   |
+| `0x66X0`  | `SWAP X`      | `?00000--`    | Swaps the upper and lower half of register `X`.                                       |
+| `0x670X`  | `SWAP [X]`    | `?00000--`    | Swaps the upper and lower half of value pointed to by register `X`.                   |
 
 #### Instruction Flags
 
@@ -282,7 +284,7 @@ flag is set, in order to execute. The execution conditions which can be used are
     - `Z`: Set if the result is zero.
     - `N`, `C`, `O` and `U`: Clear.
     - `H`: Set.
-- `OR`, `XOR`
+- `OR`, `XOR`, `SWAP`
     - `Z`: Set if the result is zero.
     - `N`, `H`, `C`, `O` and `U`: Clear.
 - `CMP`

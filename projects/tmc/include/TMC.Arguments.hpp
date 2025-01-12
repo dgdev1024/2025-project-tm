@@ -11,9 +11,9 @@ namespace tmc
     {
     public:
         static void Capture (Int32 pArgCount, Char** pArgVector);
-        static Boolean Has (const String& pKey);
-        static const String& Get (const String& pKey, const String& pDefault = "");
-        static const String& Get (const String& pKey, const Index& pIndex, const String& pDefault = "");
+        static Boolean Has (const String& pKey, const Char& pShort);
+        static const String& Get (const String& pKey, const Char& pShort, const String& pDefault = "");
+        static const String& Get (const String& pKey, const Char& pShort, const Index& pIndex, const String& pDefault = "");
 
     private:
         static void InsertArgument (const String& pKey, const String& pValue);

@@ -46,37 +46,61 @@ namespace tmc
             }
             else if (lArgument.starts_with('-') && lArgument.size() == 2)
             {
-                String lKey = lArgument.substr(1);
-                while (lIndex + 1 < pArgCount && pArgVector[lIndex + 1][0] != '-')
+                String  lKey = "";
+                String  lValue = "";
+
+                if (lIndex + 1 < pArgCount && pArgVector[lIndex + 1][0] != '-')
                 {
-                    InsertArgument(lKey, pArgVector[++lIndex]);
+                    lKey    = lArgument.substr(1);
+
+                    do
+                    {
+                        InsertArgument(lKey, pArgVector[++lIndex]);
+                    } while (lIndex + 1 < pArgCount && pArgVector[lIndex + 1][0] != '-');
+                }
+                else
+                {
+                    lKey    = lArgument.substr(1);
+                    InsertArgument(lKey, "");
                 }
             }
         }
     }
 
-    Boolean Arguments::Has (const String& pKey)
+    Boolean Arguments::Has (const String& pKey, const Char& pShort)
     {
-        return sArguments.contains(pKey);
+        return sArguments.contains(pKey) || sArguments.contains(String { pShort });
     }
 
-    const String& Arguments::Get (const String& pKey, const String& pDefault)
+    const String& Arguments::Get (const String& pKey, const Char& pShort, const String& pDefault)
     {
         auto lIter = sArguments.find(pKey);
         if (lIter != sArguments.end() && lIter->second.empty() == false)
         {
             return lIter->second.at(0);
         }
+        
+        auto lShortIter = sArguments.find(String { pShort });
+        if (lShortIter != sArguments.end() && lShortIter->second.empty() == false)
+        {
+            return lShortIter->second.at(0);
+        }
 
         return pDefault;
     }
 
-    const String& Arguments::Get (const String& pKey, const Index& pIndex, const String& pDefault)
+    const String& Arguments::Get (const String& pKey, const Char& pShort, const Index& pIndex, const String& pDefault)
     {
         auto lIter = sArguments.find(pKey);
         if (lIter != sArguments.end() && lIter->second.size() < pIndex)
         {
             return lIter->second.at(pIndex);
+        }
+
+        auto lShortIter = sArguments.find(String { pShort });
+        if (lShortIter != sArguments.end() && lShortIter->second.size() < pIndex)
+        {
+            return lShortIter->second.at(pIndex);
         }
 
         return pDefault;
