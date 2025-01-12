@@ -39,7 +39,7 @@ namespace tmm
     tmc::Boolean Lexer::HasMoreTokens () const
     {
         return  mTokens.empty() == false &&
-                mTokens.back().mType != TokenType::EndOfFile;
+                mTokens.front().mType != TokenType::EndOfFile;
     }
 
     const Token& Lexer::TokenAt (const tmc::Index& pIndex) const
@@ -62,12 +62,6 @@ namespace tmm
         }
 
         return lDiscardedToken;
-    }
-
-    tmc::Boolean Lexer::InsertToken (const TokenType& pType, const tmc::String& pValue)
-    {
-        mTokens.emplace(mTokens.begin() + (mTokenPointer++), pType, pValue);
-        return true;
     }
 
     tmc::Boolean Lexer::TokenizeFile (const tmc::Path& pPath)
@@ -100,6 +94,9 @@ namespace tmm
             return false;
         }
 
+        mCurrentFile = lFullPath;
+        mCurrentLine = 1;
+
         tmc::Boolean lResult = TokenizeStream(lFile);
         if (lResult == false)
         {
@@ -111,7 +108,6 @@ namespace tmm
 
     tmc::Boolean Lexer::TokenizeStream (std::istream& pStream)
     {
-        tmc::Index      lLine = 1;
         tmc::Int32      lCharacter = 0;
         tmc::Boolean    lIsComment = false;
         tmc::Boolean    lIsGood = false;
@@ -128,8 +124,8 @@ namespace tmm
             if (lCharacter == '\n')
             {
                 lIsComment = false;
-                lLine++;
-                InsertToken(TokenType::NewLine);
+                mCurrentLine++;
+                // InsertToken(TokenType::NewLine);
                 continue;
             }
 
@@ -160,13 +156,20 @@ namespace tmm
 
             if (lIsGood == false)
             {
-                std::cerr << "[Lexer]   At line #" << lLine << std::endl;
+                std::cerr << "[Lexer]   At line #" << mCurrentLine << std::endl;
                 return false;
             }
         }
     }
 
     /* Private Methods - Tokenization *************************************************************/
+
+    tmc::Boolean Lexer::InsertToken (const TokenType& pType, const tmc::String& pValue)
+    {
+        mTokens.emplace(mTokens.begin() + (mTokenPointer++), pType, pValue, mCurrentFile,
+            mCurrentLine);
+        return true;
+    }
 
     tmc::Boolean Lexer::TokenizeIdentifier (std::istream& pStream, tmc::Int32& pCharacter)
     {

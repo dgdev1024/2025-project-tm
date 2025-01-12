@@ -2,13 +2,15 @@
 
 #include <TMM.Precompiled.hpp>
 #include <TMM.Lexer.hpp>
+#include <TMM.Parser.hpp>
 #include <TMC.Arguments.hpp>
 
 tmc::Int32 RunAssembler ()
 {
     tmc::String     lInputFile  = tmc::Arguments::Get("input-file", 'i');
-    tmc::Boolean    lListTokens = tmc::Arguments::Has("list-tokens", 'l');
+    tmc::String     lOutputFile = tmc::Arguments::Get("output-file", 'o');
     tmm::Lexer      lLexer;
+    tmm::Parser     lParser;
 
     if (lInputFile.empty() == true)
     {
@@ -16,15 +18,21 @@ tmc::Int32 RunAssembler ()
         return 1;
     }
 
+    // if (lOutputFile.empty() == true)
+    // {
+    //     std::cerr << "[RunAssembler] Missing parameter: --output-file, -o." << std::endl;
+    //     return 2;
+    // }
+
     if (lLexer.TokenizeFile(lInputFile) == false)
     {
         return 3;
     }
 
-    if (lListTokens == true)
+    tmm::Program::Ptr lProgram = lParser.ParseProgram(lLexer);
+    if (lProgram == nullptr)
     {
-        lLexer.ListTokens();
-        return 0;
+        return 4;
     }
 
     return 0;

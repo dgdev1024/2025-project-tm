@@ -9,9 +9,16 @@ namespace tmm
     enum class KeywordType
     {
         None = 0,
+        Language,
         Register,
         Condition,
         Instruction
+    };
+
+    enum LanguageType : tmc::Int32
+    {
+        LT_LET,
+        LT_CONST
     };
 
     enum RegisterType : tmc::Int32

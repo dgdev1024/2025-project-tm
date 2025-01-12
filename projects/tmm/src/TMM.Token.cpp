@@ -12,6 +12,7 @@ namespace tmm
     {
         switch (mType)
         {
+            case TokenType::Keyword:                    return "Keyword";
             case TokenType::Identifier:                 return "Identifier";
             case TokenType::Char:                       return "Char";
             case TokenType::String:                     return "String";
@@ -113,6 +114,79 @@ namespace tmm
             case TokenType::LogicalAnd:
             case TokenType::LogicalOr:
             case TokenType::LogicalNot: return true;
+            default: return false;
+        }
+    }
+
+    tmc::Boolean Token::IsLogicalOperator () const
+    {
+        switch (mType)
+        {
+            case TokenType::LogicalAnd:
+            case TokenType::LogicalOr: return true;
+            default: return false;
+        }
+    }
+
+    tmc::Boolean Token::IsComparisonOperator () const
+    {
+        switch (mType)
+        {
+            case TokenType::CompareEquals:
+            case TokenType::CompareStrictEquals:
+            case TokenType::CompareNotEquals:
+            case TokenType::CompareStrictNotEquals:
+            case TokenType::CompareGreater:
+            case TokenType::CompareLess:
+            case TokenType::CompareGreaterEquals:
+            case TokenType::CompareLessEquals:  return true;
+            default: return false;
+        }
+    }
+
+    tmc::Boolean Token::IsBitwiseOperator () const
+    {
+        switch (mType)
+        {
+            case TokenType::BitwiseAnd:
+            case TokenType::BitwiseOr:
+            case TokenType::BitwiseXor:
+            case TokenType::BitwiseNot:
+            case TokenType::BitwiseLeftShift:
+            case TokenType::BitwiseRightShift: return true;
+            default: return false;
+        }
+    }
+
+    tmc::Boolean Token::IsAdditiveOperator () const
+    {
+        switch (mType)
+        {
+            case TokenType::Plus:
+            case TokenType::Minus: return true;
+            default: return false;
+        }
+    }
+
+    tmc::Boolean Token::IsMultiplicitiveOperator () const
+    {
+        switch (mType)
+        {
+            case TokenType::Times:
+            case TokenType::Divide:
+            case TokenType::Modulo: return true;
+            default: return false;
+        }
+    }
+
+    tmc::Boolean Token::IsUnaryOperator () const
+    {
+        switch (mType)
+        {
+            case TokenType::LogicalNot:
+            case TokenType::BitwiseNot:
+            case TokenType::Plus:
+            case TokenType::Minus: return true;
             default: return false;
         }
     }

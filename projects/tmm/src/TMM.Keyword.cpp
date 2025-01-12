@@ -11,6 +11,9 @@ namespace tmm
     static const tmc::Dictionary<Keyword> KEYWORD_LOOKUP = {
         { "", { KeywordType::None } },
 
+        { "LET", { KeywordType::Language, LanguageType::LT_LET } },
+        { "CONST", { KeywordType::Language, LanguageType::LT_CONST } },
+
         { "A", { KeywordType::Register, RegisterType::RT_A } },
         { "AW", { KeywordType::Register, RegisterType::RT_AW } },
         { "AH", { KeywordType::Register, RegisterType::RT_AH } },

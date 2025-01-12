@@ -87,11 +87,19 @@ namespace tmm
     {
         TokenType       mType = TokenType::Unknown;
         tmc::String     mValue = "";
+        tmc::Path       mFile = "";
+        tmc::Index      mLine = 0;
 
     public:
         const char*     ToString () const;
         const Keyword&  GetKeyword () const;
         tmc::Boolean    IsOperator () const;
+        tmc::Boolean    IsLogicalOperator () const;
+        tmc::Boolean    IsComparisonOperator () const;
+        tmc::Boolean    IsBitwiseOperator () const;
+        tmc::Boolean    IsMultiplicitiveOperator () const;
+        tmc::Boolean    IsAdditiveOperator () const;
+        tmc::Boolean    IsUnaryOperator () const;
 
     };
 

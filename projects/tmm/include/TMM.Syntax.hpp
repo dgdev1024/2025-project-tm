@@ -16,9 +16,11 @@ namespace tmm
 
         // Expressions
         BinaryExpression,
+        UnaryExpression,
 
         // Primary Expressions
         Identifier,
+        StringLiteral,
         NumericLiteral
 
     };
@@ -100,6 +102,9 @@ namespace tmm
     class Program : public Statement
     {
     public:
+        using Ptr   = tmc::Shared<Program>;
+
+    public:
         inline Program () :
             Statement { SyntaxType::Program }
         {}
@@ -144,6 +149,28 @@ namespace tmm
 
     };
 
+    class UnaryExpression : public Expression
+    {
+    public:
+        inline UnaryExpression (
+            const Expression::Ptr& pRighthand,
+            const Token& pOperator
+        ) :
+            Expression  { SyntaxType::UnaryExpression },
+            mRighthand  { pRighthand },
+            mOperator   { pOperator }
+        {}
+
+    public:
+        inline const Expression::Ptr&   GetRighthand () const   { return mRighthand; }
+        inline const Token&             GetOperator () const    { return mOperator; }
+
+    private:
+        Expression::Ptr mRighthand  = nullptr;
+        Token           mOperator;
+
+    };
+
     /* Primary Expression Syntax Classes **********************************************************/
 
     class Identifier : public Expression
@@ -159,6 +186,22 @@ namespace tmm
 
     private:
         tmc::String     mSymbol = "";
+
+    };
+
+    class StringLiteral : public Expression
+    {
+    public:
+        inline StringLiteral (const tmc::String& pValue) :
+            Expression  { SyntaxType::StringLiteral },
+            mValue      { pValue }
+        {}
+
+    public:
+        inline const tmc::String&   GetValue () const  { return mValue; }
+
+    private:
+        tmc::String     mValue = "";
 
     };
 
