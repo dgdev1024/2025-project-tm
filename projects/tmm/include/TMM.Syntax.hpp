@@ -13,15 +13,23 @@ namespace tmm
     {
         // Statements
         Program,
+        SectionStatement,
+        LabelStatement,
+        InstructionStatement,
+        FunctionStatement,
 
         // Expressions
+        FunctionCall,
         BinaryExpression,
         UnaryExpression,
 
         // Primary Expressions
         Identifier,
+        RegisterLiteral,
+        ConditionLiteral,
         StringLiteral,
-        NumericLiteral
+        NumericLiteral,
+        PlaceholderLiteral
 
     };
 
@@ -121,7 +129,130 @@ namespace tmm
         
     };
 
+    /* Statement Syntax Classes *******************************************************************/
+
+    class SectionStatement : public Statement
+    {
+    public:
+        inline SectionStatement (
+            const Token& pSection,
+            const Expression::Ptr& pOffset = nullptr
+        ) :
+            Statement   { SyntaxType::SectionStatement },
+            mSection    { pSection },
+            mOffset     { pOffset }
+        {}
+
+    public:
+        inline const Token&             GetSection () const { return mSection; }
+        inline const Expression::Ptr&   GetOffset () const { return mOffset; }
+
+    private:
+        Token           mSection;
+        Expression::Ptr mOffset = nullptr;
+
+    };
+
+    class LabelStatement : public Statement
+    {
+    public:
+        inline LabelStatement (
+            const Expression::Ptr& pSymbol
+        ) :
+            Statement   { SyntaxType::LabelStatement },
+            mSymbol     { pSymbol }
+        {}
+
+    public:
+        inline const Expression::Ptr& GetSymbol () const { return mSymbol; }
+
+    private:
+        Expression::Ptr mSymbol = nullptr;
+
+    };
+
+    class InstructionStatement : public Statement
+    {
+    public:
+        inline InstructionStatement (
+            const tmc::Int32& pMnemonic,
+            const Expression::Ptr& pOperandOne = nullptr,
+            const Expression::Ptr& pOperandTwo = nullptr
+
+        ) :
+            Statement       { SyntaxType::InstructionStatement },
+            mMnemonic       { pMnemonic },
+            mOperandOne     { pOperandOne },
+            mOperandTwo     { pOperandTwo }
+        {}
+
+    public:
+        const tmc::Int32&   GetMnemonic () const { return mMnemonic; }
+
+    private:
+        tmc::Int32      mMnemonic;
+        Expression::Ptr mOperandOne = nullptr;
+        Expression::Ptr mOperandTwo = nullptr;
+
+    };
+
+    class FunctionStatement : public Statement
+    {
+    public:
+        inline FunctionStatement (const Expression::Ptr& pName) :
+            Statement   { SyntaxType::FunctionStatement },
+            mName       { pName }
+        {}
+
+    public:
+        inline void Push (const Statement::Ptr& pSyntaxPtr)
+        {
+            mBody.push_back(pSyntaxPtr);
+        }
+
+        inline const Expression::Ptr& GetName () const
+        {
+            return mName;
+        }
+
+        inline const tmc::SharedList<Statement>& GetBody () const
+        {
+            return mBody;
+        }
+
+    private:
+        Expression::Ptr             mName = nullptr;
+        tmc::SharedList<Statement>  mBody;
+
+    };
+
     /* Expression Syntax Classes ******************************************************************/
+
+    class FunctionCall : public Expression
+    {
+    public:
+        inline FunctionCall (const Expression::Ptr& pName) :
+            Expression  { SyntaxType::FunctionCall },
+            mName       { pName }
+        {}
+
+    public:
+
+        inline void PushArgument (const Expression::Ptr& pSyntaxPtr)
+        {
+            mArguments.push_back(pSyntaxPtr);
+        }
+
+        inline const Expression::Ptr& GetName () const
+        {
+            return mName;
+        }
+
+    private:
+        Expression::Ptr             mName = nullptr;
+        tmc::SharedList<Expression> mArguments;
+
+    };
 
     class BinaryExpression : public Expression
     {
@@ -173,6 +304,38 @@ namespace tmm
 
     /* Primary Expression Syntax Classes **********************************************************/
 
+    class RegisterLiteral : public Expression
+    {
+    public:
+        inline RegisterLiteral (const tmc::Int32& pRegisterType) :
+            Expression      { SyntaxType::RegisterLiteral },
+            mRegisterType   { pRegisterType }
+        {}
+
+    public:
+        inline const tmc::Int32& GetRegisterType () const { return mRegisterType; }
+
+    private:
+        tmc::Int32  mRegisterType;
+
+    };
+
+    class ConditionLiteral : public Expression
+    {
+    public:
+        inline ConditionLiteral (const tmc::Int32& pConditionType) :
+            Expression      { SyntaxType::ConditionLiteral },
+            mConditionType   { pConditionType }
+        {}
+
+    public:
+        inline const tmc::Int32& GetConditionType () const { return mConditionType; }
+
+    private:
+        tmc::Int32  mConditionType;
+
+    };
+
     class Identifier : public Expression
     {
     public:
@@ -218,6 +381,22 @@ namespace tmm
 
     private:
         tmc::Float64    mValue = 0.0;
+
+    };
+
+    class PlaceholderLiteral : public Expression
+    {
+    public:
+        inline PlaceholderLiteral (const tmc::Uint32& pSlot) :
+            Expression  { SyntaxType::PlaceholderLiteral },
+            mSlot       { pSlot }
+        {}
+
+    public:
+        inline const tmc::Uint32&  GetSlot () const     { return mSlot; }
+
+    private:
+        tmc::Uint32 mSlot = 0;
 
     };
 

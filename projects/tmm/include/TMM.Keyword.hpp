@@ -10,6 +10,7 @@ namespace tmm
     {
         None = 0,
         Language,
+        Section,
         Register,
         Condition,
         Instruction
@@ -17,8 +18,50 @@ namespace tmm
 
     enum LanguageType : tmc::Int32
     {
+        LT_SECTION,
+        LT_FUNCTION,
         LT_LET,
         LT_CONST
+    };
+
+    enum SectionType : tmc::Int32
+    {
+        ST_METADATA,
+        ST_RST_0,
+        ST_RST_1,
+        ST_RST_2,
+        ST_RST_3,
+        ST_RST_4,
+        ST_RST_5,
+        ST_RST_6,
+        ST_RST_7,
+        ST_RST_8,
+        ST_RST_9,
+        ST_RST_A,
+        ST_RST_B,
+        ST_RST_C,
+        ST_RST_D,
+        ST_RST_E,
+        ST_RST_F,
+        ST_INT_0,
+        ST_INT_1,
+        ST_INT_2,
+        ST_INT_3,
+        ST_INT_4,
+        ST_INT_5,
+        ST_INT_6,
+        ST_INT_7,
+        ST_INT_8,
+        ST_INT_9,
+        ST_INT_A,
+        ST_INT_B,
+        ST_INT_C,
+        ST_INT_D,
+        ST_INT_E,
+        ST_INT_F,
+        ST_PROGRAM,
+        ST_RAM,
+        ST_QRAM
     };
 
     enum RegisterType : tmc::Int32

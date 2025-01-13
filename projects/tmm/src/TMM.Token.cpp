@@ -20,9 +20,11 @@ namespace tmm
             case TokenType::Binary:                     return "Binary";
             case TokenType::Octal:                      return "Octal";
             case TokenType::Hexadecimal:                return "Hexadecimal";
+            case TokenType::Placeholder:                return "Placeholder";
 
             case TokenType::Plus:                       return "Plus";
             case TokenType::Minus:                      return "Minus";
+            case TokenType::Concat:                     return "Concat";
             case TokenType::Times:                      return "Times";
             case TokenType::Divide:                     return "Divide";
             case TokenType::Modulo:                     return "Modulo";
@@ -66,6 +68,10 @@ namespace tmm
             case TokenType::OpenBrace:                  return "Open Brace";
             case TokenType::CloseBrace:                 return "Close Brace";
 
+            case TokenType::Comma:                      return "Comma";
+            case TokenType::Colon:                      return "Colon";
+            case TokenType::Period:                     return "Period";
+            
             case TokenType::NewLine:                    return "New Line";
             case TokenType::EndOfFile:                  return "End Of File";
             default:                                    return "Unknown";
@@ -163,7 +169,8 @@ namespace tmm
         switch (mType)
         {
             case TokenType::Plus:
-            case TokenType::Minus: return true;
+            case TokenType::Minus: 
+            case TokenType::Concat: return true;
             default: return false;
         }
     }

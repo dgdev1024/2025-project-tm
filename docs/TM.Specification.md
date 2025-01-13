@@ -43,6 +43,22 @@ The following is a specification for the TM CPU - a custom, emulator-only CPU ba
 | `$FFFF0000`   | `$FFFFFFFF`   | Quick random-access memory (QRAM) space.                      |
 | `$FFFFFF00`   | `$FFFFFFFF`   | Reserved for hardware-specific registers.                     |
 
+## Program Metadata
+
+The first `$1000` bytes of the program is reserved for metadata, which is information describing the
+program. The table below indicates the metadata which is expected by the TM CPU. Additional metadata
+may be requested by any emulator/hardware powered by the TM CPU.
+
+| Address       | Size          | Description                                                   |
+|---------------|---------------|---------------------------------------------------------------|
+| `$0000`       | 4 Bytes       | TM Program Magic Number - `TM08` - `0x38304D54`.              |
+| `$0004`       | 123 Bytes     | Program Name - ASCII characters only.                         |
+| `$007F`       | 1 Byte        | Program Name Null Terminator.                                 |
+| `$0080`       | 127 Bytes     | Program Author - ASCII characters only.                       |
+| `$015F`       | 1 Byte        | Program Author Null Terminator.                               |
+| `$0160`       | 4 Bytes       | Program Expected ROM Size, in Bytes.                          |
+| `$0164`       | 4 Bytes       | Program Requested RAM Size, in Bytes.                         |
+
 ## CPU Registers
 
 ### General-Purpose Registers

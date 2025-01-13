@@ -9,6 +9,7 @@ tmc::Int32 RunAssembler ()
 {
     tmc::String     lInputFile  = tmc::Arguments::Get("input-file", 'i');
     tmc::String     lOutputFile = tmc::Arguments::Get("output-file", 'o');
+    tmc::Boolean    lLexOnly    = tmc::Arguments::Has("lex-only", 'l');
     tmm::Lexer      lLexer;
     tmm::Parser     lParser;
 
@@ -18,15 +19,15 @@ tmc::Int32 RunAssembler ()
         return 1;
     }
 
-    // if (lOutputFile.empty() == true)
-    // {
-    //     std::cerr << "[RunAssembler] Missing parameter: --output-file, -o." << std::endl;
-    //     return 2;
-    // }
-
     if (lLexer.TokenizeFile(lInputFile) == false)
     {
-        return 3;
+        return 2;
+    }
+
+    if (lLexOnly == true)
+    {
+        lLexer.ListTokens();
+        return 0;
     }
 
     tmm::Program::Ptr lProgram = lParser.ParseProgram(lLexer);

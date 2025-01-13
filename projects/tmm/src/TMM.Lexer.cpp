@@ -64,6 +64,39 @@ namespace tmm
         return lDiscardedToken;
     }
 
+    tmc::Boolean Lexer::DiscardNewLine ()
+    {
+        if (
+            mTokens.front().mType == TokenType::NewLine ||
+            mTokens.front().mType == TokenType::EndOfFile
+        )
+        {
+            if (mTokens.size() > 1)
+            {
+                mTokens.erase(mTokens.begin());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    tmc::Boolean Lexer::DiscardTokenIf (const TokenType& pType)
+    {
+        if (mTokens.front().mType == pType)
+        {
+            if (mTokens.size() > 1)
+            {
+                mTokens.erase(mTokens.begin());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     tmc::Boolean Lexer::TokenizeFile (const tmc::Path& pPath)
     {
         if (pPath.empty() == true)
@@ -125,7 +158,7 @@ namespace tmm
             {
                 lIsComment = false;
                 mCurrentLine++;
-                // InsertToken(TokenType::NewLine);
+                InsertToken(TokenType::NewLine);
                 continue;
             }
 
@@ -149,7 +182,7 @@ namespace tmm
                 { lIsGood = TokenizeChar(pStream, lCharacter); }
             else if (lCharacter == '"')
                 { lIsGood = TokenizeString(pStream, lCharacter); }
-            else if (std::isdigit(lCharacter))
+            else if (lCharacter == '@' || std::isdigit(lCharacter))
                 { lIsGood = TokenizeNumber(pStream, lCharacter); }
             else
                 { lIsGood = TokenizeSymbol(pStream, lCharacter); }
@@ -250,15 +283,21 @@ namespace tmm
             }
         }
 
-        tmc::String     lValue      = "";
-        tmc::Boolean    lIsDecimal  = false;
+        tmc::String     lValue          = "";
+        tmc::Boolean    lIsDecimal      = false;
+        tmc::Boolean    lIsPlaceholder  = (pCharacter == '@');
+
+        if (lIsPlaceholder == true)
+        {
+            pCharacter = pStream.get();
+        }
 
         do
         {
             if (pCharacter == '.')
             {
-                if (lIsDecimal == true) { break; }
-                else                    { lIsDecimal = true; }
+                if (lIsDecimal == true || lIsPlaceholder == true)   { break; }
+                else                                                { lIsDecimal = true; }
             }
 
             lValue      += static_cast<char>(pCharacter);
@@ -267,7 +306,10 @@ namespace tmm
         
         pStream.unget();
         
-        return InsertToken(TokenType::Number, lValue);
+        return InsertToken(
+            (lIsPlaceholder == true) ? TokenType::Placeholder : TokenType::Number, 
+            lValue
+        );
     }
 
     tmc::Boolean Lexer::TokenizeBinary (std::istream& pStream, tmc::Int32& pCharacter)
@@ -287,6 +329,8 @@ namespace tmm
             std::cerr << "[Lexer] Expected binary string after '0b' literal." << std::endl;
             return false;
         }
+
+        pStream.unget();
 
         return InsertToken(TokenType::Binary, lValue);
     }
@@ -309,6 +353,8 @@ namespace tmm
             return false;
         }
 
+        pStream.unget();
+
         return InsertToken(TokenType::Octal, lValue);
     }
 
@@ -329,6 +375,8 @@ namespace tmm
             std::cerr << "[Lexer] Expected hexadecimal string after '0x' literal." << std::endl;
             return false;
         }
+
+        pStream.unget();
 
         return InsertToken(TokenType::Hexadecimal, lValue);
     }
@@ -497,6 +545,18 @@ namespace tmm
                 return InsertToken(TokenType::OpenBrace);
             case '}':
                 return InsertToken(TokenType::CloseBrace);
+            case ',':
+                return InsertToken(TokenType::Comma);
+            case ':':
+                return InsertToken(TokenType::Colon);
+            case '.':
+                switch (pStream.get())
+                {
+                    case '.':   return InsertToken(TokenType::Concat);
+                    default:    pStream.unget(); break;
+                }
+
+                return InsertToken(TokenType::Period);
             default:
                 std::cerr   << "[Lexer] Unexpected character '" << static_cast<char>(pCharacter)
                             << "'." << std::endl;

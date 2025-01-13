@@ -22,10 +22,12 @@ namespace tmm
         Binary,
         Octal,
         Hexadecimal,
+        Placeholder,
 
         // Arithmetic Operator Tokens
         Plus,
         Minus,
+        Concat,
         Times,
         Exponent,
         Divide,
@@ -77,6 +79,11 @@ namespace tmm
         CloseBracket,
         OpenBrace,
         CloseBrace,
+
+        // Symbol Tokens
+        Comma,
+        Colon,
+        Period,
 
         // Other Tokens
         NewLine,

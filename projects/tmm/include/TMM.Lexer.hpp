@@ -18,6 +18,8 @@ namespace tmm
         tmc::Boolean        HasMoreTokens () const;
         const Token&        TokenAt (const tmc::Index& pIndex = 0) const;
         Token               DiscardToken ();
+        tmc::Boolean        DiscardNewLine ();
+        tmc::Boolean        DiscardTokenIf (const TokenType& pType);
         tmc::Boolean        TokenizeFile (const tmc::Path& pPath);
         tmc::Boolean        TokenizeStream (std::istream& pStream);
 

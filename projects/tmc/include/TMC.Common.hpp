@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <cstdint>
 #include <cstddef>
+#include <cmath>
 
 #define TM_API
 

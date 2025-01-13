@@ -56,5 +56,5 @@ workspace "project-tm"
             "./build/bin/tmc/%{cfg.buildcfg}"
         }
         links { 
-            "tmc" 
+            "tmc", "m"
         }
