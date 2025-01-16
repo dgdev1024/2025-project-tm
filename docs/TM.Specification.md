@@ -268,6 +268,13 @@ flag is set, in order to execute. The execution conditions which can be used are
 
 #### Instruction Flags
 
+- Legend
+    - Shown in the following order: `ZNHCOUHS`
+    - `0`: Clear the flag.
+    - `1`: Set the flag.
+    - `?`: Clear or set the flag depending on the instruction's result.
+    - `-`: Flag not affected.
+
 - `DAL`, `DAW`, `DAB`
     - `Z`: Set if the adjustment result is zero; clear otherwise.
     - `H`: Clear.

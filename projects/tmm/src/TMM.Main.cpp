@@ -7,11 +7,11 @@
 
 tmc::Int32 RunAssembler ()
 {
-    tmc::String     lInputFile  = tmc::Arguments::Get("input-file", 'i');
-    tmc::String     lOutputFile = tmc::Arguments::Get("output-file", 'o');
-    tmc::Boolean    lLexOnly    = tmc::Arguments::Has("lex-only", 'l');
-    tmm::Lexer      lLexer;
-    tmm::Parser     lParser;
+    tmc::String         lInputFile  = tmc::Arguments::Get("input-file", 'i');
+    tmc::String         lOutputFile = tmc::Arguments::Get("output-file", 'o');
+    tmc::Boolean        lLexOnly    = tmc::Arguments::Has("lex-only", 'l');
+    tmm::Lexer          lLexer;
+    tmm::Parser         lParser;
 
     if (lInputFile.empty() == true)
     {

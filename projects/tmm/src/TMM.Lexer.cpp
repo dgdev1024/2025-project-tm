@@ -64,24 +64,6 @@ namespace tmm
         return lDiscardedToken;
     }
 
-    tmc::Boolean Lexer::DiscardNewLine ()
-    {
-        if (
-            mTokens.front().mType == TokenType::NewLine ||
-            mTokens.front().mType == TokenType::EndOfFile
-        )
-        {
-            if (mTokens.size() > 1)
-            {
-                mTokens.erase(mTokens.begin());
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     tmc::Boolean Lexer::DiscardTokenIf (const TokenType& pType)
     {
         if (mTokens.front().mType == pType)
@@ -158,7 +140,6 @@ namespace tmm
             {
                 lIsComment = false;
                 mCurrentLine++;
-                InsertToken(TokenType::NewLine);
                 continue;
             }
 
@@ -433,6 +414,7 @@ namespace tmm
                 {
                     case '-':   return InsertToken(TokenType::Decrement);
                     case '=':   return InsertToken(TokenType::AssignMinus);
+                    case '>':   return InsertToken(TokenType::Arrow);
                     default:    pStream.unget(); break;
                 }
 

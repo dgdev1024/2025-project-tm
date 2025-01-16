@@ -15,13 +15,13 @@ namespace tmm
         Program,
         SectionStatement,
         LabelStatement,
+        DataStatement,
         InstructionStatement,
-        FunctionStatement,
 
         // Expressions
-        FunctionCall,
         BinaryExpression,
         UnaryExpression,
+        AddressExpression,
 
         // Primary Expressions
         Identifier,
@@ -39,6 +39,7 @@ namespace tmm
     {
     public:
         using Ptr   = tmc::Shared<Statement>;
+        using Body  = tmc::SharedList<Statement>;
 
     protected:
 
@@ -80,6 +81,7 @@ namespace tmm
     {
     public:
         using Ptr   = tmc::Shared<Expression>;
+        using Body  = tmc::SharedList<Expression>;
 
     protected:
 
@@ -113,6 +115,7 @@ namespace tmm
         using Ptr   = tmc::Shared<Program>;
 
     public:
+
         inline Program () :
             Statement { SyntaxType::Program }
         {}
@@ -124,8 +127,11 @@ namespace tmm
             mBody.push_back(pSyntaxPtr);
         }
 
+    public:
+        inline const Statement::Body& GetBody () const { return mBody; }
+
     private:
-        tmc::SharedList<Statement> mBody;
+        Statement::Body mBody;
         
     };
 
@@ -134,171 +140,187 @@ namespace tmm
     class SectionStatement : public Statement
     {
     public:
+        using Ptr = tmc::Shared<SectionStatement>;
+
+    public:
+
         inline SectionStatement (
-            const Token& pSection,
-            const Expression::Ptr& pOffset = nullptr
+            const tmc::Int32& pSectionType
         ) :
-            Statement   { SyntaxType::SectionStatement },
-            mSection    { pSection },
-            mOffset     { pOffset }
+            Statement               { SyntaxType::SectionStatement },
+            mSectionType            { pSectionType }
         {}
 
     public:
-        inline const Token&             GetSection () const { return mSection; }
-        inline const Expression::Ptr&   GetOffset () const { return mOffset; }
+
+        inline const tmc::Int32&        GetSectionType () const { return mSectionType; }
+        inline tmc::Boolean             IsRAM () const { return mSectionType >= SectionType::ST_RAM; }
 
     private:
-        Token           mSection;
-        Expression::Ptr mOffset = nullptr;
+        tmc::Int32          mSectionType;
 
     };
 
     class LabelStatement : public Statement
     {
     public:
+        using Ptr = tmc::Shared<LabelStatement>;
+
+    public:
+
         inline LabelStatement (
-            const Expression::Ptr& pSymbol
+            const Expression::Ptr& pExpression
         ) :
-            Statement   { SyntaxType::LabelStatement },
-            mSymbol     { pSymbol }
+            Statement       { SyntaxType::LabelStatement },
+            mExpression     { pExpression }
         {}
 
     public:
-        inline const Expression::Ptr& GetSymbol () const { return mSymbol; }
+
+        inline const Expression::Ptr&   GetExpression () const { return mExpression; }
 
     private:
-        Expression::Ptr mSymbol = nullptr;
+        Expression::Ptr     mExpression = nullptr;
+
+    };
+
+    class DataStatement : public Statement
+    {
+    public:
+        using Ptr = tmc::Shared<DataStatement>;
+
+    public:
+
+        inline DataStatement (
+            const tmc::Int32& pDataType
+        ) :
+            Statement               { SyntaxType::DataStatement },
+            mDataType               { pDataType }
+        {}
+
+    public:
+
+        inline void PushExpression (const Expression::Ptr& pExpression)
+        {
+            mExpressionBody.push_back(pExpression);
+        }
+
+    public:
+
+        inline const tmc::Int32&            GetDataType () const { return mDataType; }
+        inline const Expression::Body&      GetExpressionBody () const { return mExpressionBody; }
+
+    private:
+        tmc::Int32          mDataType;
+        Expression::Body    mExpressionBody;
 
     };
 
     class InstructionStatement : public Statement
     {
     public:
+        using Ptr = tmc::Shared<InstructionStatement>;
+
+    public:
+
         inline InstructionStatement (
-            const tmc::Int32& pMnemonic,
-            const Expression::Ptr& pOperandOne = nullptr,
-            const Expression::Ptr& pOperandTwo = nullptr
-
+            const tmc::Int32& pInstructionType,
+            const Expression::Ptr& pFirstOperandExpression = nullptr,
+            const Expression::Ptr& pSecondOperandExpression = nullptr
         ) :
-            Statement       { SyntaxType::InstructionStatement },
-            mMnemonic       { pMnemonic },
-            mOperandOne     { pOperandOne },
-            mOperandTwo     { pOperandTwo }
+            Statement                       { SyntaxType::InstructionStatement },
+            mInstructionType                { pInstructionType },
+            mFirstOperandExpression         { pFirstOperandExpression },
+            mSecondOperandExpression        { pSecondOperandExpression }
         {}
 
     public:
-        const tmc::Int32&   GetMnemonic () const { return mMnemonic; }
+
+        inline const tmc::Int32&            GetInstructionType () const { return mInstructionType; }
+        inline const Expression::Ptr&       GetFirstOperandExpression () const { return mFirstOperandExpression; }
+        inline const Expression::Ptr&       GetSecondOperandExpression () const { return mSecondOperandExpression; }
 
     private:
-        tmc::Int32      mMnemonic;
-        Expression::Ptr mOperandOne = nullptr;
-        Expression::Ptr mOperandTwo = nullptr;
-
-    };
-
-    class FunctionStatement : public Statement
-    {
-    public:
-        inline FunctionStatement (const Expression::Ptr& pName) :
-            Statement   { SyntaxType::FunctionStatement },
-            mName       { pName }
-        {}
-
-    public:
-        inline void Push (const Statement::Ptr& pSyntaxPtr)
-        {
-            mBody.push_back(pSyntaxPtr);
-        }
-
-        inline const Expression::Ptr& GetName () const
-        {
-            return mName;
-        }
-
-        inline const tmc::SharedList<Statement>& GetBody () const
-        {
-            return mBody;
-        }
-
-    private:
-        Expression::Ptr             mName = nullptr;
-        tmc::SharedList<Statement>  mBody;
+        tmc::Int32          mInstructionType;
+        Expression::Ptr     mFirstOperandExpression = nullptr;
+        Expression::Ptr     mSecondOperandExpression = nullptr;
 
     };
 
     /* Expression Syntax Classes ******************************************************************/
 
-    class FunctionCall : public Expression
-    {
-    public:
-        inline FunctionCall (const Expression::Ptr& pName) :
-            Expression  { SyntaxType::FunctionCall },
-            mName       { pName }
-        {}
-
-    public:
-
-        inline void PushArgument (const Expression::Ptr& pSyntaxPtr)
-        {
-            mArguments.push_back(pSyntaxPtr);
-        }
-
-        inline const Expression::Ptr& GetName () const
-        {
-            return mName;
-        }
-
-    private:
-        Expression::Ptr             mName = nullptr;
-        tmc::SharedList<Expression> mArguments;
-
-    };
-
     class BinaryExpression : public Expression
     {
     public:
+        using Ptr = tmc::Shared<BinaryExpression>;
+
+    public:
         inline BinaryExpression (
-            const Expression::Ptr& pLefthand,
-            const Expression::Ptr& pRighthand,
-            const Token& pOperator
+            const Expression::Ptr& pLefthandExpression,
+            const Expression::Ptr& pRighthandExpression,
+            const Token& pOperatorToken
         ) :
-            Expression  { SyntaxType::BinaryExpression },
-            mLefthand   { pLefthand },
-            mRighthand  { pRighthand },
-            mOperator   { pOperator }
+            Expression              { SyntaxType::BinaryExpression },
+            mLefthandExpression     { pLefthandExpression },
+            mRighthandExpression    { pRighthandExpression },
+            mOperatorToken          { pOperatorToken }
         {}
 
     public:
-        inline const Expression::Ptr&   GetLefthand () const    { return mLefthand; }
-        inline const Expression::Ptr&   GetRighthand () const   { return mRighthand; }
-        inline const Token&             GetOperator () const    { return mOperator; }
+        inline const Expression::Ptr&   GetLefthandExpression () const { return mLefthandExpression; }
+        inline const Expression::Ptr&   GetRighthandExpression () const { return mRighthandExpression; }
+        inline const Token&             GetOperatorToken () const { return mOperatorToken; }
 
     private:
-        Expression::Ptr mLefthand   = nullptr;
-        Expression::Ptr mRighthand  = nullptr;
-        Token           mOperator;
+        Expression::Ptr mLefthandExpression   = nullptr;
+        Expression::Ptr mRighthandExpression  = nullptr;
+        Token           mOperatorToken;
 
     };
 
     class UnaryExpression : public Expression
     {
     public:
+        using Ptr = tmc::Shared<UnaryExpression>;
+
+    public:
         inline UnaryExpression (
-            const Expression::Ptr& pRighthand,
-            const Token& pOperator
+            const Expression::Ptr& pRighthandExpression,
+            const Token& pOperatorToken
         ) :
-            Expression  { SyntaxType::UnaryExpression },
-            mRighthand  { pRighthand },
-            mOperator   { pOperator }
+            Expression              { SyntaxType::UnaryExpression },
+            mRighthandExpression    { pRighthandExpression },
+            mOperatorToken          { pOperatorToken }
         {}
 
     public:
-        inline const Expression::Ptr&   GetRighthand () const   { return mRighthand; }
-        inline const Token&             GetOperator () const    { return mOperator; }
+        inline const Expression::Ptr&   GetRighthandExpression () const { return mRighthandExpression; }
+        inline const Token&             GetOperatorToken () const { return mOperatorToken; }
 
     private:
-        Expression::Ptr mRighthand  = nullptr;
-        Token           mOperator;
+        Expression::Ptr mRighthandExpression  = nullptr;
+        Token           mOperatorToken;
+
+    };
+
+    class AddressExpression : public Expression
+    {
+    public:
+        using Ptr = tmc::Shared<AddressExpression>;
+
+    public:
+        inline AddressExpression (
+            const Expression::Ptr& pInnerExpression
+        ) :
+            Expression          { SyntaxType::AddressExpression },
+            mInnerExpression    { pInnerExpression }
+        {}
+
+    public:
+        inline const Expression::Ptr&   GetInnerExpression () const { return mInnerExpression; }
+
+    private:
+        Expression::Ptr mInnerExpression  = nullptr;
 
     };
 
@@ -339,6 +361,9 @@ namespace tmm
     class Identifier : public Expression
     {
     public:
+        using Ptr = tmc::Shared<Identifier>;
+
+    public:
         inline Identifier (const tmc::String& pSymbol) :
             Expression  { SyntaxType::Identifier },
             mSymbol     { pSymbol }
@@ -355,6 +380,9 @@ namespace tmm
     class StringLiteral : public Expression
     {
     public:
+        using Ptr = tmc::Shared<StringLiteral>;
+
+    public:
         inline StringLiteral (const tmc::String& pValue) :
             Expression  { SyntaxType::StringLiteral },
             mValue      { pValue }
@@ -370,6 +398,9 @@ namespace tmm
 
     class NumericLiteral : public Expression
     {
+    public:
+        using Ptr = tmc::Shared<NumericLiteral>;
+
     public:
         inline NumericLiteral (const tmc::Float64& pValue) :
             Expression  { SyntaxType::NumericLiteral },

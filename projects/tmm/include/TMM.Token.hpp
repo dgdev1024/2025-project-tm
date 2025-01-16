@@ -72,7 +72,7 @@ namespace tmm
         LogicalOr,
         LogicalNot,
 
-        // Bracket Tokens
+        // Grouping Tokens
         OpenParen,
         CloseParen,
         OpenBracket,
@@ -84,9 +84,9 @@ namespace tmm
         Comma,
         Colon,
         Period,
+        Arrow,
 
         // Other Tokens
-        NewLine,
         EndOfFile
     };
 
@@ -101,6 +101,7 @@ namespace tmm
         const char*     ToString () const;
         const Keyword&  GetKeyword () const;
         tmc::Boolean    IsOperator () const;
+        tmc::Boolean    IsAssignmentOperator () const;
         tmc::Boolean    IsLogicalOperator () const;
         tmc::Boolean    IsComparisonOperator () const;
         tmc::Boolean    IsBitwiseOperator () const;

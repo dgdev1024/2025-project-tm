@@ -18,10 +18,13 @@ namespace tmm
 
     enum LanguageType : tmc::Int32
     {
+        
         LT_SECTION,
-        LT_FUNCTION,
-        LT_LET,
-        LT_CONST
+        LT_DB,          // Data statement - "Data Byte"
+        LT_DW,          // Data statement - "Data Word"
+        LT_DL,          // Data statement - "Data Long"
+        LT_DS,          // Data statement - "Data Spacing"
+
     };
 
     enum SectionType : tmc::Int32
@@ -61,7 +64,9 @@ namespace tmm
         ST_INT_F,
         ST_PROGRAM,
         ST_RAM,
-        ST_QRAM
+        ST_QRAM,
+
+        ST_COUNT
     };
 
     enum RegisterType : tmc::Int32

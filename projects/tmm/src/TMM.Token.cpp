@@ -28,6 +28,8 @@ namespace tmm
             case TokenType::Times:                      return "Times";
             case TokenType::Divide:                     return "Divide";
             case TokenType::Modulo:                     return "Modulo";
+            case TokenType::Increment:                  return "Increment";
+            case TokenType::Decrement:                  return "Decrement";
 
             case TokenType::BitwiseAnd:                 return "Bitwise And";
             case TokenType::BitwiseOr:                  return "Bitwise Or";
@@ -71,8 +73,8 @@ namespace tmm
             case TokenType::Comma:                      return "Comma";
             case TokenType::Colon:                      return "Colon";
             case TokenType::Period:                     return "Period";
+            case TokenType::Arrow:                      return "Arrow";
             
-            case TokenType::NewLine:                    return "New Line";
             case TokenType::EndOfFile:                  return "End Of File";
             default:                                    return "Unknown";
         }
@@ -120,6 +122,25 @@ namespace tmm
             case TokenType::LogicalAnd:
             case TokenType::LogicalOr:
             case TokenType::LogicalNot: return true;
+            default: return false;
+        }
+    }
+
+    tmc::Boolean Token::IsAssignmentOperator () const
+    {
+        switch (mType)
+        {
+            case TokenType::AssignEquals:
+            case TokenType::AssignPlus:
+            case TokenType::AssignMinus:
+            case TokenType::AssignTimes:
+            case TokenType::AssignDivide:
+            case TokenType::AssignModulo:
+            case TokenType::AssignBitwiseAnd:
+            case TokenType::AssignBitwiseOr:
+            case TokenType::AssignBitwiseXor:
+            case TokenType::AssignBitwiseLeftShift:
+            case TokenType::AssignBitwiseRightShift: return true;
             default: return false;
         }
     }
