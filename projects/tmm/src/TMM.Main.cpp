@@ -1,8 +1,7 @@
 /// @file TMM.Main.cpp
 
 #include <TMM.Precompiled.hpp>
-#include <TMM.Lexer.hpp>
-#include <TMM.Parser.hpp>
+#include <TMM.Interpreter.hpp>
 #include <TMC.Arguments.hpp>
 
 tmc::Int32 RunAssembler ()
@@ -12,6 +11,8 @@ tmc::Int32 RunAssembler ()
     tmc::Boolean        lLexOnly    = tmc::Arguments::Has("lex-only", 'l');
     tmm::Lexer          lLexer;
     tmm::Parser         lParser;
+    tmm::Object         lObject;
+    tmm::Interpreter    lInterpreter { lLexer, lParser, lObject };
 
     if (lInputFile.empty() == true)
     {
@@ -34,6 +35,11 @@ tmc::Int32 RunAssembler ()
     if (lProgram == nullptr)
     {
         return 4;
+    }
+
+    if (lInterpreter.Run(lProgram) == false)
+    {
+        return 5;
     }
 
     return 0;
